@@ -116,6 +116,10 @@ export class ActivationService {
         error: error instanceof Error ? error.message : error,
       });
 
+      if (error instanceof BusinessException) {
+        throw error;
+      }
+
       throw new BusinessException(
         ErrorCode.INTERNAL_ERROR,
         'Неожиданная ошибка при активации промокода',
