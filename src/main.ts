@@ -19,6 +19,7 @@ async function bootstrap() {
         : ['error']) as [],
     },
   );
+  app.enableCors();
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
