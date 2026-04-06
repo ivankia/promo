@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Promocode {
+  id                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              String      @db.VarChar(20)
+  discountPercent   Int         @map("discount_percent")
+  activationsLimit  Int         @default(0)     @map("activations_limit")
+  activationsCount  Int         @default(0)     @map("activations_count")
+  expirationDate    DateTime    @map("expiration_date")
+  isActive          Boolean     @default(true)  @map("is_active")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt      @map("updated_at")
+  activations       Activation[]
+
+  @@unique(code)
+  @@index(createdAt(sort: Desc))
+
+  @@map("promocodes")
+}
+
+model Activation {
+  id                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  promocodeId       String      @db.Uuid          @map("promocode_id")
+  email             String      @db.VarChar(255)
+  activatedAt       DateTime    @default(now())   @map("activated_at")
+  promocode         Promocode   @relation(fields: [promocodeId], references: [id], onDelete: Cascade)
+
+  @@unique([email, promocodeId])
+  @@index(promocodeId)
+  @@index([promocodeId, email])
+
+  @@map("activations")
+}
