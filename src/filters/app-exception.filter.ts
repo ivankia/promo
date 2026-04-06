@@ -3,13 +3,9 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
-  HttpException,
-  BadRequestException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ErrorCode } from '../enums/error-code.enum';
-import { BusinessException } from 'src/common/business.exception';
-import e from 'express';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class AppExceptionFilter implements ExceptionFilter {
@@ -20,8 +16,6 @@ export class AppExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Внутренняя ошибка сервера';
     let errorCode = ErrorCode.INTERNAL_ERROR;
-
-    console.log(exception);
 
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       switch (exception.code) {

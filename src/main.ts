@@ -16,7 +16,7 @@ async function bootstrap() {
     {
       logger: (process.env.LOGGER_LEVEL
         ? process.env.LOGGER_LEVEL.split(',')
-        : ['log', 'error', 'warn', 'debug', 'verbose']) as [],
+        : ['error']) as [],
     },
   );
   app.setGlobalPrefix('api');
