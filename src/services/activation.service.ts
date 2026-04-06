@@ -3,6 +3,8 @@ import { PrismaService } from './prisma.service';
 import type { Activation, ActivationInput } from '../types/activation';
 import { BusinessException } from 'src/common/business.exception';
 import { ErrorCode } from 'src/enums/error-code.enum';
+import { Promocode } from '@prisma/client';
+import { PromocodeInput } from 'src/types/promocode';
 
 @Injectable()
 export class ActivationService {
@@ -81,13 +83,21 @@ export class ActivationService {
             },
           });
 
+          // Обновляем промокод
+          const updateData: Partial<Promocode> = {
+            isActive: true,
+            activationsCount: code.activations_count + 1,
+          };
+
           // Проверяем, достигнут ли лимит активаций после этой активации
-          if (code.activations_limit == code.activations_count + 1) {
-            await prisma.promocode.update({
-              where: { id: code.id },
-              data: { isActive: false },
-            });
+          if (code.activations_limit == updateData.activationsCount) {
+            updateData.isActive = false;
           }
+
+          await prisma.promocode.update({
+            where: { id: code.id },
+            data: updateData,
+          });
 
           return activation;
         },
